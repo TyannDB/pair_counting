@@ -1,18 +1,10 @@
+
+
 import numpy as np
-import matplotlib.pyplot as plt
-from abacusnbody.data.compaso_halo_catalog import CompaSOHaloCatalog
-import abacusnbody.metadata
-import fitsio
 import time
-from scipy.spatial import cKDTree
-import scipy as sc
-import torch
-from sklearn import metrics
 from numba import njit, prange
 import numba
 import math
-from mpl_toolkits.mplot3d import Axes3D
-from scipy.special import legendre
 
 
 
