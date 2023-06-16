@@ -417,9 +417,8 @@ def cross_counter_3d(X1,X2,weights1,weights2,bins_s,bins_mu,bins_theta,n_cells,i
 ######################## Turner Code ############################
 
 
-#@njit(parallel=False,cache=True)
+@njit(parallel=False,cache=True)
 def psi1_auto(X,nbar,v,v_sig,alpha,v_amp,bin_s_min,bin_s_max,n_s_bin):
-    # return psi1_n,psi1_n,psi2_d,psi2_d
 
     num = np.zeros((n_s_bin))
     den = np.zeros((n_s_bin))
@@ -449,9 +448,8 @@ def psi1_auto(X,nbar,v,v_sig,alpha,v_amp,bin_s_min,bin_s_max,n_s_bin):
 
     return num,den,sum_w
 
-#@njit(parallel=False,cache=True)
+@njit(parallel=False,cache=True)
 def psi1_cross(X1,X2,nbar1,nbar2,v1,v2,v1_sig,v2_sig,alpha1,alpha2,v1_amp,v2_amp,bin_s_min,bin_s_max,n_s_bin):
-    # return psi1_n,psi1_n,psi2_d,psi2_d
 
     num = np.zeros((n_s_bin))
     den = np.zeros((n_s_bin))
@@ -482,9 +480,8 @@ def psi1_cross(X1,X2,nbar1,nbar2,v1,v2,v1_sig,v2_sig,alpha1,alpha2,v1_amp,v2_amp
 
     return num,den,sum_w
 
-#@njit(parallel=False,cache=True)
+@njit(parallel=False,cache=True)
 def psi2_auto(X,nbar,v,v_sig,alpha,v_amp,bin_s_min,bin_s_max,n_s_bin):
-    # return psi1_n,psi1_n,psi2_d,psi2_d
 
     num = np.zeros((n_s_bin))
     den = np.zeros((n_s_bin))
@@ -516,9 +513,8 @@ def psi2_auto(X,nbar,v,v_sig,alpha,v_amp,bin_s_min,bin_s_max,n_s_bin):
 
     return num,den,sum_w
 
-#@njit(parallel=False,cache=True)
+@njit(parallel=False,cache=True)
 def psi2_cross(X1,X2,nbar1,nbar2,v1,v2,v1_sig,v2_sig,alpha1,alpha2,v1_amp,v2_amp,bin_s_min,bin_s_max,n_s_bin):
-    # return psi1_n,psi1_n,psi2_d,psi2_d
 
     num = np.zeros((n_s_bin))
     den = np.zeros((n_s_bin))
@@ -551,9 +547,8 @@ def psi2_cross(X1,X2,nbar1,nbar2,v1,v2,v1_sig,v2_sig,alpha1,alpha2,v1_amp,v2_amp
 
     return num,den,sum_w
 
-#@njit(parallel=False,cache=True)
+@njit(parallel=False,cache=True)
 def psi3_auto(X_v,X_d,n_v,n_d,v,v_sig,alpha,v_amp,d_amp,bin_s_min,bin_s_max,n_s_bin,bin_mu_min,bin_mu_max,n_mu_bin):
-    # return psi3_n,psi3_d
 
     num = np.zeros((n_s_bin,n_mu_bin))
     den = np.zeros((n_s_bin,n_mu_bin))
@@ -596,9 +591,8 @@ def psi3_auto(X_v,X_d,n_v,n_d,v,v_sig,alpha,v_amp,d_amp,bin_s_min,bin_s_max,n_s_
 
     return num,den,sum_w_d,sum_w_v
 
-#@njit(parallel=False,cache=True)
+@njit(parallel=False,cache=True)
 def psi3_cross(X_v,X_d,n_v,n_d,v,v_sig,alpha,v_amp,d_amp,bin_s_min,bin_s_max,n_s_bin,bin_mu_min,bin_mu_max,n_mu_bin):
-    # return psi3_n,psi3_d
 
     num = np.zeros((n_s_bin,n_mu_bin))
     den = np.zeros((n_s_bin,n_mu_bin))
@@ -642,7 +636,7 @@ def psi3_cross(X_v,X_d,n_v,n_d,v,v_sig,alpha,v_amp,d_amp,bin_s_min,bin_s_max,n_s
     return num,den,sum_w_d,sum_w_v
 
 
-#@njit(parallel=True,cache=True)
+@njit(parallel=True,cache=True)
 def psi1_counter(X,nbar,v,v_sig,alpha,v_amp,bins_s,n_cells,indices_cells,L_cell_pair,L_cells):
     """
     Make sure numba has been initialized with the correct number 
@@ -682,7 +676,7 @@ def psi1_counter(X,nbar,v,v_sig,alpha,v_amp,bins_s,n_cells,indices_cells,L_cell_
         
     return num,den,sum_w
 
-#@njit(parallel=True,cache=True)
+@njit(parallel=True,cache=True)
 def psi2_counter(X,nbar,v,v_sig,alpha,v_amp,bins_s,n_cells,indices_cells,L_cell_pair,L_cells):
     """
     Make sure numba has been initialized with the correct number 
@@ -722,7 +716,7 @@ def psi2_counter(X,nbar,v,v_sig,alpha,v_amp,bins_s,n_cells,indices_cells,L_cell_
         
     return num,den,sum_w
 
-#@njit(parallel=True,cache=True)
+@njit(parallel=True,cache=True)
 def psi3_counter(X_v,X_d,n_v,n_d,v,v_sig,alpha,v_amp,d_amp,bins_s,bins_mu,n_cells,indices_cells1,indices_cells2,L_cell_pair,L_cells):
     """
     Make sure numba has been initialized with the correct number 
