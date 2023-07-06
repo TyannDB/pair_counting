@@ -989,12 +989,20 @@ class CorrelationFunctionPVD:
         self.dat_vsig,self.ran_vsig = dat_vsig,ran_vsig
         self.dat_valpha,self.ran_valpha = dat_valpha,ran_valpha
 
-        self.n_cells = np.int64(np.floor((np.max(self.ran_dpos,axis=0)+1-np.min(self.ran_dpos,axis=0))/self.s_max))
-        self.indices_cells_dat_v = np.int64(np.floor(self.n_cells * (dat_vpos-np.min(ran_vpos,axis=0))/(np.max(ran_vpos,axis=0)+1-np.min(ran_vpos,axis=0))))
-        self.indices_cells_dat_d = np.int64(np.floor(self.n_cells * (dat_dpos-np.min(ran_dpos,axis=0))/(np.max(ran_dpos,axis=0)+1-np.min(ran_dpos,axis=0))))
-        self.indices_cells_ran_v = np.int64(np.floor(self.n_cells * (ran_vpos-np.min(ran_vpos,axis=0))/(np.max(ran_vpos,axis=0)+1-np.min(ran_vpos,axis=0))))
-        self.indices_cells_ran_d = np.int64(np.floor(self.n_cells * (ran_dpos-np.min(ran_dpos,axis=0))/(np.max(ran_dpos,axis=0)+1-np.min(ran_dpos,axis=0))))
-
+        #self.n_cells = np.int64(np.floor((np.max(self.ran_dpos,axis=0)+1-np.min(self.ran_dpos,axis=0))/self.s_max))
+        #self.indices_cells_dat_v = np.int64(np.floor(self.n_cells * (dat_vpos-np.min(ran_vpos,axis=0))/(np.max(ran_vpos,axis=0)+1-np.min(ran_vpos,axis=0))))
+        #self.indices_cells_dat_d = np.int64(np.floor(self.n_cells * (dat_dpos-np.min(ran_dpos,axis=0))/(np.max(ran_dpos,axis=0)+1-np.min(ran_dpos,axis=0))))
+        #self.indices_cells_ran_v = np.int64(np.floor(self.n_cells * (ran_vpos-np.min(ran_vpos,axis=0))/(np.max(ran_vpos,axis=0)+1-np.min(ran_vpos,axis=0))))
+        #self.indices_cells_ran_d = np.int64(np.floor(self.n_cells * (ran_dpos-np.min(ran_dpos,axis=0))/(np.max(ran_dpos,axis=0)+1-np.min(ran_dpos,axis=0))))
+        
+        min_box = np.minimum(np.minimum(np.min(dat_vpos,axis=0),np.min(dat_dpos,axis=0),np.min(ran_vpos,axis=0)),np.min(ran_dpos,axis=0))-1
+        max_box = np.maximum(np.maximum(np.max(dat_vpos,axis=0),np.max(dat_dpos,axis=0),np.max(ran_vpos,axis=0)),np.max(ran_dpos,axis=0))+1
+        self.n_cells = np.int64(np.floor((max_box-min_box)/self.s_max))
+        self.indices_cells_dat_v = np.int64(np.floor(self.n_cells * (dat_vpos-min_box)/(max_box-min_box)))
+        self.indices_cells_dat_d = np.int64(np.floor(self.n_cells * (dat_dpos-min_box)/(max_box-min_box)))
+        self.indices_cells_ran_v = np.int64(np.floor(self.n_cells * (ran_vpos-min_box)/(max_box-min_box)))
+        self.indices_cells_ran_d = np.int64(np.floor(self.n_cells * (ran_dpos-min_box)/(max_box-min_box)))
+          
         L_cell_pair,L_cells = get_cell_pairs(self.n_cells)
         self.L_cells = np.int64(L_cells)
         self.L_cell_pair = np.int64(L_cell_pair)
@@ -1124,10 +1132,12 @@ class CorrelationFunction3D:
         self.RR = RR
         
         ##-- Grid partionning
-        self.n_cells = np.int64(np.floor((np.max(random_positions,axis=0)+1-np.min(random_positions,axis=0))/self.s_max))
-        self.indices_cells_data = np.int64(np.floor(self.n_cells * (data_positions-np.min(random_positions,axis=0))/(np.max(random_positions,axis=0)+1-np.min(random_positions,axis=0))))
-        self.indices_cells_random = np.int64(np.floor(self.n_cells * (random_positions-np.min(random_positions,axis=0))/(np.max(random_positions,axis=0)+1-np.min(random_positions,axis=0))))
-         
+        min_box = np.minimum(np.min(random_positions,axis=0),np.min(data_positions,axis=0))-1
+        max_box = np.maximum(np.max(random_positions,axis=0),np.max(data_positions,axis=0))+1
+        self.n_cells = np.int64(np.floor((max_box-min_box)/self.s_max))
+        self.indices_cells_data = np.int64(np.floor(self.n_cells * (data_positions-min_box)/(max_box-min_box)))
+        self.indices_cells_random = np.int64(np.floor(self.n_cells * (random_positions-min_box)/(max_box-min_box)))
+            
         L_cell_pair,L_cells = get_cell_pairs(self.n_cells)
         self.L_cells = np.int64(L_cells)
         self.L_cell_pair = np.int64(L_cell_pair)
