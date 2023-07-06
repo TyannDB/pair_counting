@@ -486,6 +486,7 @@ def psi1_auto(X,nbar,v,v_sig,alpha,v_amp,bin_s_min,bin_s_max,n_s_bin):
 
     num = np.zeros((n_s_bin))
     den = np.zeros((n_s_bin))
+    count = np.zeros((n_s_bin))
     eta = v/alpha
 
     for i in prange(X.shape[0]):
@@ -508,14 +509,16 @@ def psi1_auto(X,nbar,v,v_sig,alpha,v_amp,bin_s_min,bin_s_max,n_s_bin):
             if n_s_bin>bin_s_index>=0 :
                 num[int(bin_s_index)] += w_i*w_j * cosAB * eta[i]*eta[j]
                 den[int(bin_s_index)] += w_i*w_j * cosAB** 2 
-
-    return num,den
+                count[int(bin_s_index)] += 1
+                
+    return num,den,count
 
 @njit(parallel=False,cache=True)
 def psi1_cross(X1,X2,nbar1,nbar2,v1,v2,v1_sig,v2_sig,alpha1,alpha2,v1_amp,v2_amp,bin_s_min,bin_s_max,n_s_bin):
 
     num = np.zeros((n_s_bin))
     den = np.zeros((n_s_bin))
+    count = np.zeros((n_s_bin))
     eta1 = v1/alpha1
     eta2 = v2/alpha2
     for i in prange(len(X1)):
@@ -538,15 +541,16 @@ def psi1_cross(X1,X2,nbar1,nbar2,v1,v2,v1_sig,v2_sig,alpha1,alpha2,v1_amp,v2_amp
             if n_s_bin>bin_s_index>=0 :
                 num[int(bin_s_index)] += w_i*w_j * cosAB * eta1[i]*eta2[j]
                 den[int(bin_s_index)] += w_i*w_j * cosAB** 2 
+                count[int(bin_s_index)] += 1
 
-
-    return num,den
+    return num,den,count
 
 @njit(parallel=False,cache=True)
 def psi2_auto(X,nbar,v,v_sig,alpha,v_amp,bin_s_min,bin_s_max,n_s_bin):
 
     num = np.zeros((n_s_bin))
     den = np.zeros((n_s_bin))
+    count = np.zeros((n_s_bin))
     eta = v/alpha
 
     for i in prange(X.shape[0]):
@@ -571,15 +575,16 @@ def psi2_auto(X,nbar,v,v_sig,alpha,v_amp,bin_s_min,bin_s_max,n_s_bin):
             if n_s_bin>bin_s_index>=0 :
                 num[int(bin_s_index)] += w_i*w_j * cosA * cosB * eta[i]*eta[j]
                 den[int(bin_s_index)] += w_i*w_j * cosA * cosB *cosAB
+                count[int(bin_s_index)] += 1
 
-
-    return num,den
+    return num,den,count
 
 @njit(parallel=False,cache=True)
 def psi2_cross(X1,X2,nbar1,nbar2,v1,v2,v1_sig,v2_sig,alpha1,alpha2,v1_amp,v2_amp,bin_s_min,bin_s_max,n_s_bin):
 
     num = np.zeros((n_s_bin))
     den = np.zeros((n_s_bin))
+    count = np.zeros((n_s_bin))
     eta1 = v1/alpha1
     eta2 = v2/alpha2
 
@@ -605,9 +610,9 @@ def psi2_cross(X1,X2,nbar1,nbar2,v1,v2,v1_sig,v2_sig,alpha1,alpha2,v1_amp,v2_amp
             if n_s_bin>bin_s_index>=0 :
                 num[int(bin_s_index)] += w_i*w_j * cosA * cosB * eta1[i]*eta2[j]
                 den[int(bin_s_index)] += w_i*w_j * cosA * cosB *cosAB
+                count[int(bin_s_index)] += 1
 
-
-    return num,den
+    return num,den,count
 
 @njit(parallel=False,cache=True)
 def psi3_sum(X_v,X_d,n_v,n_d,v,v_sig,alpha,v_amp,d_amp):
@@ -756,6 +761,7 @@ def psi1_counter(X,nbar,v,v_sig,alpha,v_amp,bins_s,n_cells,indices_cells,L_cell_
 
     num = np.zeros((n_s_bin))
     den = np.zeros((n_s_bin))
+    cnt = np.zeros((n_s_bin))
 
     #--Count pairs within the same cell:
     indices_cells_flat = indices_cells[:,0]*(n_cells[1]*n_cells[2]) + indices_cells[:,1]*(n_cells[2]) +indices_cells[:,2]
@@ -765,6 +771,7 @@ def psi1_counter(X,nbar,v,v_sig,alpha,v_amp,bins_s,n_cells,indices_cells,L_cell_
         count = psi1_auto(X[w],nbar[w],v[w],v_sig[w],alpha[w],v_amp,bin_s_min,bin_s_max,n_s_bin)
         num += count[0]
         den += count[1]
+        cnt += count[2]
 
     #--Count pairs between pair of cells       
     L_cell_pair_flat_1 = L_cell_pair[:,0]*(n_cells[1]*n_cells[2]) + L_cell_pair[:,1]*(n_cells[2]) +L_cell_pair[:,2]      
@@ -778,8 +785,9 @@ def psi1_counter(X,nbar,v,v_sig,alpha,v_amp,bins_s,n_cells,indices_cells,L_cell_
         count = psi1_cross(X[w1],X[w2],nbar[w1],nbar[w2],v[w1],v[w2],v_sig[w1],v_sig[w2],alpha[w1],alpha[w2],v_amp,v_amp,bin_s_min,bin_s_max,n_s_bin)        
         num += count[0]
         den += count[1]
+        cnt += count[2]
         
-    return num,den
+    return num,den,cnt
 
 
 @njit(parallel=True,cache=True)
@@ -796,6 +804,8 @@ def psi2_counter(X,nbar,v,v_sig,alpha,v_amp,bins_s,n_cells,indices_cells,L_cell_
 
     num = np.zeros((n_s_bin))
     den = np.zeros((n_s_bin))
+    cnt = np.zeros((n_s_bin))
+
     #--Count pairs within the same cell:
     indices_cells_flat = indices_cells[:,0]*(n_cells[1]*n_cells[2]) + indices_cells[:,1]*(n_cells[2]) +indices_cells[:,2]
     
@@ -804,6 +814,7 @@ def psi2_counter(X,nbar,v,v_sig,alpha,v_amp,bins_s,n_cells,indices_cells,L_cell_
         count = psi2_auto(X[w],nbar[w],v[w],v_sig[w],alpha[w],v_amp,bin_s_min,bin_s_max,n_s_bin)
         num += count[0]
         den += count[1]
+        cnt += count[2]
     #--Count pairs between pair of cells       
     L_cell_pair_flat_1 = L_cell_pair[:,0]*(n_cells[1]*n_cells[2]) + L_cell_pair[:,1]*(n_cells[2]) +L_cell_pair[:,2]      
     L_cell_pair_flat_2 = L_cell_pair[:,3]*(n_cells[1]*n_cells[2]) + L_cell_pair[:,4]*(n_cells[2]) +L_cell_pair[:,5]      
@@ -816,7 +827,8 @@ def psi2_counter(X,nbar,v,v_sig,alpha,v_amp,bins_s,n_cells,indices_cells,L_cell_
         count = psi2_cross(X[w1],X[w2],nbar[w1],nbar[w2],v[w1],v[w2],v_sig[w1],v_sig[w2],alpha[w1],alpha[w2],v_amp,v_amp,bin_s_min,bin_s_max,n_s_bin)         
         num += count[0]
         den += count[1]
-    return num,den
+        cnt += count[2]
+    return num,den,cnt
 
 @njit(parallel=True,cache=True)
 def psi3_counter(X_v,X_d,n_v,n_d,v,v_sig,alpha,v_amp,d_amp,bins_s,bins_mu,n_cells,indices_cells1,indices_cells2,L_cell_pair,L_cells):
@@ -907,10 +919,10 @@ class CorrelationFunctionPV:
         start = time.time()
 
         if mode=='psi1':
-             num,den = psi1_counter(self.dat_pos,self.dat_n,self.dat_v,self.dat_vsig,self.dat_alpha,self.dat_vamp,
+             num,den,count = psi1_counter(self.dat_pos,self.dat_n,self.dat_v,self.dat_vsig,self.dat_alpha,self.dat_vamp,
                           self.edges,self.n_cells,self.indices_cells_dat,self.L_cell_pair,self.L_cells)
         if mode =='psi2':
-             num,den = psi2_counter(self.dat_pos,self.dat_n,self.dat_v,self.dat_vsig,self.dat_alpha,self.dat_vamp,
+             num,den,count = psi2_counter(self.dat_pos,self.dat_n,self.dat_v,self.dat_vsig,self.dat_alpha,self.dat_vamp,
                           self.edges,self.n_cells,self.indices_cells_dat,self.L_cell_pair,self.L_cells)
                 
         sum_w = psi12_sum(self.dat_pos,self.dat_n,self.dat_v,self.dat_vsig,self.dat_alpha,self.dat_vamp)
@@ -918,7 +930,7 @@ class CorrelationFunctionPV:
         print('DD count',time.time()-start)
         
 
-        return num,den,sum_w
+        return num,den,sum_w,count
         
     def RR(self,mode):
         self.mode = mode
@@ -926,17 +938,17 @@ class CorrelationFunctionPV:
         start = time.time()
         
         if mode=='psi1':
-             num,den = psi1_counter(self.ran_pos,self.ran_n,self.ran_v,self.ran_vsig,self.ran_alpha,self.ran_vamp,
+             num,den,count = psi1_counter(self.ran_pos,self.ran_n,self.ran_v,self.ran_vsig,self.ran_alpha,self.ran_vamp,
                           self.edges,self.n_cells,self.indices_cells_ran,self.L_cell_pair,self.L_cells)
         if mode =='psi2':
-             num,den = psi2_counter(self.ran_pos,self.ran_n,self.ran_v,self.ran_vsig,self.ran_alpha,self.ran_vamp,
+             num,den,count = psi2_counter(self.ran_pos,self.ran_n,self.ran_v,self.ran_vsig,self.ran_alpha,self.ran_vamp,
                           self.edges,self.n_cells,self.indices_cells_ran,self.L_cell_pair,self.L_cells)
         
         sum_w = psi12_sum(self.ran_pos,self.ran_n,self.ran_v,self.ran_vsig,self.ran_alpha,self.ran_vamp)
 
         print('RR count',time.time()-start)
 
-        return num,den,sum_w
+        return num,den,sum_w,count
         
     def psi(self,mode):
 
